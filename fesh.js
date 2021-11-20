@@ -42,10 +42,15 @@ function pointDetect() {
         newPoint();
         playerScore++;
     }
-    if (playerScore == 1) {
+    if (playerScore == 10) {
         gameEnded = true;
         console.clear();
-        console.log("game won, congratulations!");
+        console.log("Congratulations, you won the game! (type 'q' to quit)");
+        process.stdin.on("keypress", (chunk, key) => {
+            if (key && key.name == "q") {
+                process.exit();
+            }
+        });
         clearInterval(timer);
         fs.appendFileSync(
             "your_games.txt",
@@ -59,32 +64,44 @@ function pointDetect() {
 newPoint();
 
 function showStats() {
-    console.log(yellow, "Your position -", `(X: ${playerX} | Y: ${playerY})`);
-    console.log(yellow, "Next point -", `(X: ${pointX} | Y: ${pointY})`);
-    console.log(`Score: ${playerScore} / 10`);
+    if (!gameEnded) {
+        console.log(
+            yellow,
+            "Your position -",
+            `(X: ${playerX} | Y: ${playerY})`
+        );
+        console.log(yellow, "Next point -", `(X: ${pointX} | Y: ${pointY})`);
+        console.log(`Score: ${playerScore} / 10`);
+    }
 }
 
-process.stdin.on("keypress", (chunk, key) => {
-    if (!gameEnded) {
-        switch (key.name) {
-            case "w":
-                playerY--;
-                newPosition();
-                break;
-            case "s":
-                playerY++;
-                newPosition();
-                break;
-            case "a":
-                playerX--;
-                newPosition();
-                break;
-            case "d":
-                playerX++;
-                newPosition();
-                break;
-            case "q":
-                process.exit();
+function startGame() {
+    process.stdin.on("keypress", (chunk, key) => {
+        if (!gameEnded) {
+            switch (key.name) {
+                case "w":
+                    playerY--;
+                    newPosition();
+                    break;
+                case "s":
+                    playerY++;
+                    newPosition();
+                    break;
+                case "a":
+                    playerX--;
+                    newPosition();
+                    break;
+                case "d":
+                    playerX++;
+                    newPosition();
+                    break;
+                case "q":
+                    process.exit();
+            }
         }
-    }
-});
+    });
+}
+
+if (!gameEnded) {
+    startGame();
+}
